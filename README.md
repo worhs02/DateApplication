@@ -10,4 +10,5 @@
 ### 개발 언어: Swift UiKit
 
 ### 초기 디자인
+![메모](https://github.com/worhs02/DateApplication/assets/106726806/2908491e-1e99-4425-bc05-aaec07b7cfa5)
 
