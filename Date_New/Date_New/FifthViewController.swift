@@ -1,13 +1,13 @@
 //
-//  ThirdViewController.swift
-//  dateApp
+//  FifthViewController.swift
+//  Date_New
 //
 //  Created by 이슬기 on 4/27/24.
 //
-// ThirdViewController.swift
+
 import UIKit
 
-class ThirdViewController: UIViewController {
+class FifthViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .systemBackground
