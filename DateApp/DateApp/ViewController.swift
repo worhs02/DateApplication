@@ -8,6 +8,9 @@ class ViewController: UIViewController {
     // 키워드 레이블을 저장할 배열
     var keywordLabels: [UILabel] = []
     
+    // 장소 정보 레이블을 저장할 배열
+    var placeInfoLabels: [UILabel] = []
+    
     // + 버튼
     let plusButton: UIButton = {
         let button = UIButton()
@@ -32,6 +35,23 @@ class ViewController: UIViewController {
         button.isHidden = true // 초기에는 숨김 상태
         button.addTarget(self, action: #selector(minusButtonTapped), for: .touchUpInside)
         return button
+    }()
+    
+    // 장소 이미지 뷰
+    let placeImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+    
+    // 장소 설명 레이블
+    let placeDescriptionLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .left
+        label.numberOfLines = 0
+        label.backgroundColor = .clear
+        return label
     }()
 
     override func viewDidLoad() {
@@ -93,15 +113,23 @@ class ViewController: UIViewController {
         // 처음에는 다른 탭에서도 키워드가 보이지 않도록 추가
         hideAllKeywords()
         
-        // 카테고리 탭에서만 키워드 레이블을 추가
+        // 카테고리 탭에서만 키워드 및 장소 정보 레이블을 추가
         tabBar.delegate = self
+        
+        // Initially add place information labels only if "카테고리" tab is selected
+        if tabBar.selectedItem?.title == "카테고리" {
+            addPlaceImageViewAndDescription()
+        }
     }
+
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        // 탭바가 배치된 후에 키워드 레이블 위치 조정
+        // 탭바가 배치된 후에 키워드 및 장소 정보 레이블 위치 조정
         layoutKeywordLabels()
+        layoutPlaceInfoLabels()
+        layoutPlaceImageViewAndDescription()
     }
     
     func addKeywordLabels() {
@@ -135,9 +163,8 @@ class ViewController: UIViewController {
     func layoutKeywordLabels() {
         // UILabel의 초기 위치 및 크기 설정
         var xPosition: CGFloat = 20 // 시작 x 위치
-        var yPosition: CGFloat = 50 // 시작 y 위치
+        var yPosition: CGFloat = 70 // 시작 y 위치
         let labelHeight: CGFloat = 30 // 높이
-        let topMargin: CGFloat = 50 // 위쪽 마진
         
         // UILabel의 위치 조정
         for label in keywordLabels {
@@ -154,6 +181,75 @@ class ViewController: UIViewController {
         }
     }
     
+    
+    func layoutPlaceInfoLabels() {
+        var yPosition: CGFloat = view.bounds.height - 150 // 시작 y 위치 설정
+        let labelWidth: CGFloat = view.bounds.width - 40 // 너비 설정
+        let labelHeight: CGFloat = 30 // 높이 설정
+        
+        // UILabel의 위치 조정
+        for label in placeInfoLabels {
+            label.frame = CGRect(x: 20, y: yPosition, width: labelWidth, height: labelHeight)
+            
+            // y 위치 업데이트
+            yPosition += labelHeight + 10 // 간격을 조절하려면 10을 다른 값으로 변경
+        }
+    }
+    
+    // 장소 이미지 및 설명 추가 함수
+    func addPlaceImageViewAndDescription() {
+        // 이미지 설정
+        let placeImage = UIImage(named: "korea") // 장소 이미지 파일명으로 수정
+        placeImageView.image = placeImage
+        
+        // 설명 설정
+        let placeDescription = "투썸 플레이스" // 장소 설명 내용으로 수정
+        placeDescriptionLabel.text = placeDescription
+        
+        // 이미지뷰와 레이블을 화면에 추가
+        view.addSubview(placeImageView)
+        view.addSubview(placeDescriptionLabel)
+    }
+    
+    // 장소 이미지 및 설명 레이블 레이아웃 함수
+    func layoutPlaceImageViewAndDescription() {
+        // 기존에 추가되어 있는 containerView가 있다면 제거
+        if let containerView = view.viewWithTag(100) {
+            containerView.removeFromSuperview()
+        }
+        
+        // 카테고리 탭이 선택되었을 때만 그룹 컨테이너 추가
+        if tabBar.selectedItem?.title == "카테고리" {
+            // 그룹으로 사용할 UIView 생성
+            let containerView = UIView()
+            containerView.tag = 100 // 태그를 사용하여 나중에 제거하기 위해 식별할 수 있도록 설정
+            containerView.frame = CGRect(x: 20, y: 200, width: view.bounds.width - 40, height: 100) // 예시 위치 및 크기
+            containerView.layer.borderWidth = 1 // 테두리 두께
+            containerView.layer.borderColor = UIColor.black.cgColor // 테두리 색상 설정
+            containerView.layer.cornerRadius = 10 // 테두리 둥글게 만들기
+            
+            // 이미지뷰 추가
+            placeImageView.frame = CGRect(x: 0, y: 0, width: 100, height: 100) // 예시 위치 및 크기
+            containerView.addSubview(placeImageView)
+            placeImageView.layer.cornerRadius = 10 // 테두리 둥글게 만들기
+            placeImageView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner] // 왼쪽 위아래만 둥글게 설정
+            placeImageView.layer.borderWidth = 1 // 테두리 두께 설정
+            placeImageView.layer.borderColor = UIColor.black.cgColor // 테두리 색상 설정
+
+            
+            // 텍스트뷰 추가
+            let labelX = placeImageView.frame.maxX + 20
+            let labelWidth = containerView.bounds.width - labelX - 20
+            let labelHeight = placeDescriptionLabel.sizeThatFits(CGSize(width: labelWidth, height: CGFloat.greatestFiniteMagnitude)).height
+            placeDescriptionLabel.frame = CGRect(x: labelX, y: 0, width: labelWidth, height: labelHeight)
+            containerView.addSubview(placeDescriptionLabel)
+            
+            // 그룹을 화면에 추가
+            view.addSubview(containerView)
+        }
+    }
+
+    
     // + 버튼 탭 핸들러
     @objc func plusButtonTapped() {
         plusButton.isHidden = true
@@ -165,7 +261,7 @@ class ViewController: UIViewController {
     @objc func minusButtonTapped() {
         plusButton.isHidden = false
         minusButton.isHidden = true
-        hideAllKeywords()
+        hideExtraKeywords()
     }
     
     // 모든 키워드 라벨 표시
@@ -175,36 +271,52 @@ class ViewController: UIViewController {
         }
     }
     
-    // 처음 3개의 키워드 라벨만 보이도록 설정
-    func hideAllKeywords() {
+    // 추가적인 키워드 라벨 숨김
+    func hideExtraKeywords() {
         for (index, label) in keywordLabels.enumerated() {
-            if index < 3 {
-                label.isHidden = false
-            } else {
+            if index >= 3 {
                 label.isHidden = true
             }
+        }
+    }
+    
+    // 처음에는 다른 탭에서도 키워드가 보이지 않도록 설정
+    func hideAllKeywords() {
+        for label in keywordLabels {
+            label.isHidden = true
         }
     }
 }
 
 extension ViewController: UITabBarDelegate {
     func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-        // 카테고리 탭이 선택되었을 때만 키워드 레이블 추가
+        // 카테고리 탭이 선택되었을 때만 키워드 및 장소 정보 레이블을 추가
         if item.title == "카테고리" {
             addKeywordLabels()
+            addPlaceImageViewAndDescription()
+            layoutPlaceImageViewAndDescription()
             plusButton.isHidden = false
             minusButton.isHidden = true
         } else {
-            // 다른 탭이 선택되었을 때는 키워드 레이블 제거
+            // 다른 탭이 선택되었을 때는 키워드 및 장소 정보 레이블을 제거
             for label in keywordLabels {
                 label.removeFromSuperview()
             }
             keywordLabels.removeAll()
+            
+            for label in placeInfoLabels {
+                label.removeFromSuperview()
+            }
+            placeInfoLabels.removeAll()
+            placeImageView.removeFromSuperview()
+            placeDescriptionLabel.removeFromSuperview()
+            
             plusButton.isHidden = true
             minusButton.isHidden = true
         }
     }
 }
+
 
 extension UIImage {
     func resize(targetSize: CGSize) -> UIImage {
