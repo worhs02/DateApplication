@@ -1,13 +1,13 @@
 //
-//  dateAppUITestsLaunchTests.swift
-//  dateAppUITests
+//  Date_NewUITestsLaunchTests.swift
+//  Date_NewUITests
 //
-//  Created by 이슬기 on 4/22/24.
+//  Created by 이슬기 on 4/27/24.
 //
 
 import XCTest
 
-final class dateAppUITestsLaunchTests: XCTestCase {
+final class Date_NewUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

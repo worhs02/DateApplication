@@ -1,13 +1,13 @@
 //
-//  dateAppUITests.swift
-//  dateAppUITests
+//  Date_NewUITests.swift
+//  Date_NewUITests
 //
-//  Created by 이슬기 on 4/22/24.
+//  Created by 이슬기 on 4/27/24.
 //
 
 import XCTest
 
-final class dateAppUITests: XCTestCase {
+final class Date_NewUITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

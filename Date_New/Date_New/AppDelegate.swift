@@ -1,8 +1,8 @@
 //
 //  AppDelegate.swift
-//  dateApp
+//  Date_New
 //
-//  Created by 이슬기 on 4/22/24.
+//  Created by 이슬기 on 4/27/24.
 //
 
 import UIKit
