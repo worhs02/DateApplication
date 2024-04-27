@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream:Date_New/Date_New/SecondViewController.swift
 //
 //  SecondViewController.swift
 //  Date_New
@@ -6,8 +5,6 @@
 //  Created by 이슬기 on 4/27/24.
 //
 
-=======
->>>>>>> Stashed changes:tabBarController 추가/dateApp/dateApp/SecondViewController.swift
 import UIKit
 
 class SecondViewController: UIViewController {
@@ -378,8 +375,6 @@ class SecondViewController: UIViewController {
         self.dismiss(animated: true, completion: nil)
     }
 }
-<<<<<<< Updated upstream:Date_New/Date_New/SecondViewController.swift
-=======
 
 extension UIImage {
     func resize(targetSize: CGSize) -> UIImage {
@@ -406,4 +401,3 @@ extension UIImage {
         return newImage!
     }
 }
->>>>>>> Stashed changes:tabBarController 추가/dateApp/dateApp/SecondViewController.swift
