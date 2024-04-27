@@ -11,6 +11,14 @@ class ViewController: UIViewController {
     // 장소 정보 레이블을 저장할 배열
     var placeInfoLabels: [UILabel] = []
     
+    // 장소 정보를 담을 딕셔너리 배열
+    let places: [[String: String]] = [
+        ["name": "카페", "image": "korea", "description": "카페 장소 설명"],
+        ["name": "공원", "image": "korea", "description": "공원 장소 설명"],
+        ["name": "음식점", "image": "korea", "description": "음식점 장소 설명"],
+        // 추가적인 장소는 여기에 계속해서 추가
+    ]
+    
     // + 버튼
     let plusButton: UIButton = {
         let button = UIButton()
@@ -118,7 +126,8 @@ class ViewController: UIViewController {
         
         // Initially add place information labels only if "카테고리" tab is selected
         if tabBar.selectedItem?.title == "카테고리" {
-            addPlaceImageViewAndDescription()
+            addKeywordLabels()
+            addPlaceContainer()
         }
     }
 
@@ -129,11 +138,14 @@ class ViewController: UIViewController {
         // 탭바가 배치된 후에 키워드 및 장소 정보 레이블 위치 조정
         layoutKeywordLabels()
         layoutPlaceInfoLabels()
-        layoutPlaceImageViewAndDescription()
+        // "카테고리" 탭에서만 스크롤 뷰의 콘텐츠 크기 설정
+        if tabBar.selectedItem?.title == "카테고리" {
+            layoutPlaceContainer()
+        }
     }
     
     func addKeywordLabels() {
-        let keywords = ["액티비티", "공방", "실내", "실외", "기념일"]
+        let keywords = ["액티비티", "공방", "실내", "실외", "기념일", "예약가능", "음식저"]
         
         // 키워드 텍스트를 표시할 UILabel들을 생성하여 화면 위쪽에 배치
         for (index, keyword) in keywords.enumerated() {
@@ -197,64 +209,85 @@ class ViewController: UIViewController {
     }
     
     // 장소 이미지 및 설명 추가 함수
-    func addPlaceImageViewAndDescription() {
-        // 이미지 설정
-        let placeImage = UIImage(named: "korea") // 장소 이미지 파일명으로 수정
-        placeImageView.image = placeImage
-        
-        // 설명 설정
-        let placeDescription = "투썸 플레이스" // 장소 설명 내용으로 수정
-        placeDescriptionLabel.text = placeDescription
-        
-        // 이미지뷰와 레이블을 화면에 추가
-        view.addSubview(placeImageView)
-        view.addSubview(placeDescriptionLabel)
-    }
-    
-    // 장소 이미지 및 설명 레이블 레이아웃 함수
-    func layoutPlaceImageViewAndDescription() {
-        // 기존에 추가되어 있는 containerView가 있다면 제거
-        if let containerView = view.viewWithTag(100) {
-            containerView.removeFromSuperview()
-        }
-        
-        // 카테고리 탭이 선택되었을 때만 그룹 컨테이너 추가
-        if tabBar.selectedItem?.title == "카테고리" {
-            // 그룹으로 사용할 UIView 생성
-            let containerView = UIView()
-            containerView.tag = 100 // 태그를 사용하여 나중에 제거하기 위해 식별할 수 있도록 설정
-            containerView.frame = CGRect(x: 20, y: 200, width: view.bounds.width - 40, height: 100) // 예시 위치 및 크기
-            containerView.layer.borderWidth = 1 // 테두리 두께
-            containerView.layer.borderColor = UIColor.black.cgColor // 테두리 색상 설정
-            containerView.layer.cornerRadius = 10 // 테두리 둥글게 만들기
-            
-            // 이미지뷰 추가
-            placeImageView.frame = CGRect(x: 0, y: 0, width: 100, height: 100) // 예시 위치 및 크기
-            containerView.addSubview(placeImageView)
-            placeImageView.layer.cornerRadius = 10 // 테두리 둥글게 만들기
-            placeImageView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner] // 왼쪽 위아래만 둥글게 설정
-            placeImageView.layer.borderWidth = 1 // 테두리 두께 설정
-            placeImageView.layer.borderColor = UIColor.black.cgColor // 테두리 색상 설정
+    func addPlaceContainer() {
+        // 스크롤 뷰 생성
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.layer.borderWidth = 1.0 // 테두리 두께 설정
+        scrollView.layer.borderColor = UIColor.lightGray.cgColor // 테두리 색상 설정
+        scrollView.layer.cornerRadius = 10 // 테두리의 둥근 정도 설정
+        scrollView.clipsToBounds = true // 테두리 외의 내용을 잘라냅니다.
+        view.addSubview(scrollView)
 
-            
-            // 텍스트뷰 추가
-            let labelX = placeImageView.frame.maxX + 20
-            let labelWidth = containerView.bounds.width - labelX - 20
-            let labelHeight = placeDescriptionLabel.sizeThatFits(CGSize(width: labelWidth, height: CGFloat.greatestFiniteMagnitude)).height
-            placeDescriptionLabel.frame = CGRect(x: labelX, y: 0, width: labelWidth, height: labelHeight)
-            containerView.addSubview(placeDescriptionLabel)
-            
-            // 그룹을 화면에 추가
-            view.addSubview(containerView)
+        // 스크롤 뷰 제약 조건 추가
+        NSLayoutConstraint.activate([
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.topAnchor.constraint(equalTo: keywordLabels.last!.bottomAnchor, constant: 20),
+            scrollView.bottomAnchor.constraint(equalTo: tabBar.topAnchor)
+        ])
+
+        // 장소 이미지 및 설명 추가
+        for (index, place) in places.enumerated() {
+            guard let name = place["name"], let imageName = place["image"], let description = place["description"] else {
+                continue
+            }
+
+            // 장소 이미지 설정
+            let placeImage = UIImage(named: imageName)
+            let imageView = UIImageView(image: placeImage)
+            imageView.contentMode = .scaleAspectFill
+            imageView.translatesAutoresizingMaskIntoConstraints = false
+            scrollView.addSubview(imageView)
+
+            // 장소 설명 설정
+            let descriptionLabel = UILabel()
+            descriptionLabel.text = description
+            descriptionLabel.textAlignment = .left
+            descriptionLabel.numberOfLines = 0
+            descriptionLabel.backgroundColor = .clear
+            descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+            scrollView.addSubview(descriptionLabel)
+
+            // 제약 조건 추가
+            NSLayoutConstraint.activate([
+                // 이미지뷰 제약조건
+                imageView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: CGFloat(index * 150) + 20),
+                imageView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 20),
+                imageView.widthAnchor.constraint(equalToConstant: 100),
+                imageView.heightAnchor.constraint(equalToConstant: 100),
+
+                // 설명 레이블 제약조건
+                descriptionLabel.topAnchor.constraint(equalTo: imageView.topAnchor),
+                descriptionLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 20), // 이미지뷰의 오른쪽에 배치
+                descriptionLabel.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -20),
+                descriptionLabel.bottomAnchor.constraint(lessThanOrEqualTo: scrollView.bottomAnchor, constant: -20)
+            ])
         }
     }
+
+
+    
+    // 장소 이미지 및 설명 레이아웃 함수
+    func layoutPlaceContainer() {
+        // 키워드 아래에 위치하도록 y 위치를 설정
+        var yPosition: CGFloat = keywordLabels.last?.frame.maxY ?? 70 // 키워드의 마지막 위치 아래로 설정, 기본값은 70
+        yPosition += 20 // 키워드와 간격을 조금 주기 위해 값을 추가
+
+        // 현재 화면 크기에 맞게 스크롤 뷰의 콘텐츠 크기를 설정
+        if let scrollView = view.subviews.first(where: { $0 is UIScrollView }) as? UIScrollView {
+            let scrollViewContentSize = CGSize(width: scrollView.bounds.width, height: yPosition + CGFloat(places.count * 150) + 20) // 스크롤 뷰의 높이를 키워드 아래에서부터 시작하도록 설정
+            scrollView.contentSize = scrollViewContentSize
+        }
+    }
+
 
     
     // + 버튼 탭 핸들러
     @objc func plusButtonTapped() {
         plusButton.isHidden = true
         minusButton.isHidden = false
-        showAllKeywords()
+        showAllKeywordsPopup()
     }
     
     // - 버튼 탭 핸들러
@@ -286,6 +319,77 @@ class ViewController: UIViewController {
             label.isHidden = true
         }
     }
+    
+    // 모든 키워드 팝업 창 표시
+    func showAllKeywordsPopup() {
+        let popupViewController = UIViewController()
+        popupViewController.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+        let popupView = UIView()
+        popupView.backgroundColor = .white
+        popupView.layer.cornerRadius = 15
+        popupView.clipsToBounds = true
+        popupViewController.view.addSubview(popupView)
+        
+        // 팝업 창 제약 조건 설정
+        popupView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            popupView.topAnchor.constraint(equalTo: popupViewController.view.topAnchor, constant: 10),
+            popupView.leadingAnchor.constraint(equalTo: popupViewController.view.leadingAnchor, constant: 20),
+            popupView.trailingAnchor.constraint(equalTo: popupViewController.view.trailingAnchor, constant: -20),
+            popupView.heightAnchor.constraint(greaterThanOrEqualToConstant: 20) // 최소 높이 설정
+        ])
+
+        var previousLabel: UILabel?
+        for (index, keyword) in keywordLabels.enumerated() {
+            let popupKeywordLabel = UILabel()
+            popupKeywordLabel.text = keyword.text
+            popupKeywordLabel.textAlignment = .center
+            popupKeywordLabel.backgroundColor = keyword.backgroundColor
+            popupKeywordLabel.layer.cornerRadius = keyword.layer.cornerRadius
+            popupKeywordLabel.clipsToBounds = true
+            popupKeywordLabel.translatesAutoresizingMaskIntoConstraints = false
+            popupView.addSubview(popupKeywordLabel)
+            
+            // contentCompressionResistancePriority 및 contentHuggingPriority 설정
+            popupKeywordLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+            popupKeywordLabel.setContentHuggingPriority(.required, for: .horizontal)
+            
+            // 라벨 제약 조건 설정
+            let itemWidth: CGFloat = 100 // 라벨의 너비 설정
+            let leadingMargin: CGFloat = 20 // 왼쪽 여백 설정
+            let trailingMargin: CGFloat = 20 // 오른쪽 여백 설정
+            NSLayoutConstraint.activate([
+                popupKeywordLabel.heightAnchor.constraint(equalToConstant: 30),
+                popupKeywordLabel.widthAnchor.constraint(equalToConstant: itemWidth),
+                popupKeywordLabel.leadingAnchor.constraint(equalTo: popupView.leadingAnchor, constant: leadingMargin),
+                popupKeywordLabel.trailingAnchor.constraint(lessThanOrEqualTo: popupView.trailingAnchor, constant: -trailingMargin)
+            ])
+            
+            if let previousLabel = previousLabel {
+                // 이전 라벨이 있는 경우 현재 라벨의 상단을 이전 라벨의 하단과 일치시킴
+                popupKeywordLabel.topAnchor.constraint(equalTo: previousLabel.bottomAnchor, constant: 10).isActive = true
+            } else {
+                // 첫 번째 라벨의 경우 팝업 뷰의 상단에 고정
+                popupKeywordLabel.topAnchor.constraint(equalTo: popupView.topAnchor, constant: 20).isActive = true
+            }
+            
+            // 마지막 라벨을 저장하여 다음 라벨에 사용
+            previousLabel = popupKeywordLabel
+
+            // 라벨 내용에 맞게 크기 조절
+            popupKeywordLabel.sizeToFit()
+        }
+
+        // 마지막 라벨의 하단을 팝업 뷰의 하단과 일치시킴
+        if let lastLabel = previousLabel {
+            lastLabel.bottomAnchor.constraint(equalTo: popupView.bottomAnchor, constant: -20).isActive = true
+        }
+        
+        self.present(popupViewController, animated: true, completion: nil)
+    }
+
+
+
 }
 
 extension ViewController: UITabBarDelegate {
@@ -293,8 +397,7 @@ extension ViewController: UITabBarDelegate {
         // 카테고리 탭이 선택되었을 때만 키워드 및 장소 정보 레이블을 추가
         if item.title == "카테고리" {
             addKeywordLabels()
-            addPlaceImageViewAndDescription()
-            layoutPlaceImageViewAndDescription()
+            addPlaceContainer()
             plusButton.isHidden = false
             minusButton.isHidden = true
         } else {
