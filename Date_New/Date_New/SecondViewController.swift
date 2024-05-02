@@ -29,6 +29,7 @@ class SecondViewController: UIViewController {
         // 추가적인 장소는 여기에 계속해서 추가
     ]
     let keywords = ["액티비티", "공방", "실내", "실외", "기념일", "예약가능", "음식저"]
+    var selectedKeywords: Set<String> = []
     
     // + 버튼
     let plusButton: UIButton = {
@@ -38,23 +39,11 @@ class SecondViewController: UIViewController {
         button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 15
         button.clipsToBounds = true
-        button.addTarget(self, action: #selector(plusButtonTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(filterButtonTapped), for: .touchUpInside)
         button.isHidden = false
         return button
     }()
     
-    // - 버튼
-    let minusButton: UIButton = {
-        let button = UIButton()
-        button.setTitle("-", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .systemBlue
-        button.layer.cornerRadius = 15
-        button.clipsToBounds = true
-        button.isHidden = true // 초기에는 숨김 상태
-       
-        return button
-    }()
     
     // 장소 이미지 뷰
     let placeImageView: UIImageView = {
@@ -87,16 +76,6 @@ class SecondViewController: UIViewController {
             plusButton.heightAnchor.constraint(equalToConstant: 30),
             plusButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             plusButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20)
-        ])
-        
-        // - 버튼 추가
-        view.addSubview(minusButton)
-        minusButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            minusButton.widthAnchor.constraint(equalToConstant: 30),
-            minusButton.heightAnchor.constraint(equalToConstant: 30),
-            minusButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            minusButton.topAnchor.constraint(equalTo: plusButton.bottomAnchor, constant: 20) // + 버튼 아래에 추가
         ])
         
         // 키워드 라벨 추가
@@ -253,151 +232,23 @@ class SecondViewController: UIViewController {
 
     
     // MARK: - Actions
+
+    @objc func filterButtonTapped() {
+           let filterViewController = FilterViewController()
+           filterViewController.selectedKeywords = selectedKeywords
+           filterViewController.modalPresentationStyle = .overFullScreen // 전체 화면으로 표시
+           present(filterViewController, animated: true, completion: nil)
+       }
     
-    // + 버튼 탭 핸들러
-    @objc func plusButtonTapped() {
-        showAllKeywordsPopup()
-    }
-    
-    // 모든 키워드 팝업 창 표시
-    func showAllKeywordsPopup() {
-        let popupViewController = UIViewController()
-        popupViewController.view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
-        let popupView = UIView()
-        popupView.backgroundColor = .white
-        popupView.layer.cornerRadius = 15
-        popupView.clipsToBounds = true
-        popupViewController.view.addSubview(popupView)
-        
-        // 팝업 창 제약 조건 설정
-        popupView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            popupView.topAnchor.constraint(equalTo: popupViewController.view.topAnchor, constant: 10),
-            popupView.leadingAnchor.constraint(equalTo: popupViewController.view.leadingAnchor, constant: 20),
-            popupView.trailingAnchor.constraint(equalTo: popupViewController.view.trailingAnchor, constant: -20),
-        ])
-        
-        let closeButton = UIButton(type: .system)
-        closeButton.setTitle("-", for: .normal)
-        closeButton.setTitleColor(.white, for: .normal)
-        closeButton.backgroundColor = .systemBlue
-        closeButton.layer.cornerRadius = 15
-        closeButton.clipsToBounds = true
-        closeButton.addTarget(self, action: #selector(closePopup), for: .touchUpInside)
-        popupViewController.view.addSubview(closeButton)
-        
-        // 버튼 제약 조건 설정
-        closeButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            closeButton.widthAnchor.constraint(equalToConstant: 30),
-            closeButton.heightAnchor.constraint(equalToConstant: 30),
-            closeButton.trailingAnchor.constraint(equalTo: popupViewController.view.trailingAnchor, constant: -20),
-            closeButton.topAnchor.constraint(equalTo: popupViewController.view.safeAreaLayoutGuide.topAnchor, constant: 20)
-        ])
-        
-        // 팝업에 키워드 추가
-        var previousLabel: UILabel?
-        var previousLineLabel: UILabel?
-
-        for keyword in keywords {
-            let popupKeywordLabel = UILabel()
-            popupKeywordLabel.text = keyword
-            popupKeywordLabel.textAlignment = .center
-            popupKeywordLabel.backgroundColor = .systemOrange // 주황색으로 변경
-            popupKeywordLabel.layer.cornerRadius = 15 // 둥근 테두리 설정
-            popupKeywordLabel.clipsToBounds = true // 테두리가 잘림 방지
-            popupKeywordLabel.translatesAutoresizingMaskIntoConstraints = false
-            popupView.addSubview(popupKeywordLabel)
-            
-            // contentCompressionResistancePriority 및 contentHuggingPriority 설정
-            popupKeywordLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-            popupKeywordLabel.setContentHuggingPriority(.required, for: .horizontal)
-            
-            // 라벨 제약 조건 설정
-            let itemWidth: CGFloat = 100 // 라벨의 너비 설정
-            let leadingMargin: CGFloat = 20 // 왼쪽 여백 설정
-            let trailingMargin: CGFloat = 20 // 오른쪽 여백 설정
-            NSLayoutConstraint.activate([
-                popupKeywordLabel.heightAnchor.constraint(equalToConstant: 30),
-                popupKeywordLabel.widthAnchor.constraint(equalToConstant: itemWidth),
-                popupKeywordLabel.leadingAnchor.constraint(equalTo: popupView.leadingAnchor, constant: leadingMargin),
-                popupKeywordLabel.trailingAnchor.constraint(lessThanOrEqualTo: popupView.trailingAnchor, constant: -trailingMargin)
-            ])
-            
-            if let previousLabel = previousLabel {
-                // 이전 라벨이 있는 경우 현재 라벨의 상단을 이전 라벨의 하단과 일치시킴
-                popupKeywordLabel.topAnchor.constraint(equalTo: previousLabel.bottomAnchor, constant: 10).isActive = true
-            } else {
-                // 첫 번째 라벨의 경우 팝업 뷰의 상단에 고정
-                popupKeywordLabel.topAnchor.constraint(equalTo: popupView.topAnchor, constant: 20).isActive = true
-            }
-            
-            // 라벨 내용에 맞게 크기 조절
-            popupKeywordLabel.sizeToFit()
-            
-            // 이전 라벨이 있고, 이전 라벨과의 오른쪽 끝 좌표가 현재 라벨의 왼쪽 끝 좌표보다 큰 경우,
-            // 현재 라벨을 다음 줄에 배치하기 위해 이전 라벨을 이전 줄 마지막 라벨로 설정
-            if var previousLabel = previousLabel, var previousLineLabel = previousLineLabel {
-                let previousRightX = previousLabel.frame.origin.x + previousLabel.frame.size.width
-                let currentLeftX = popupKeywordLabel.frame.origin.x
-                if previousRightX > currentLeftX {
-                    previousLineLabel = previousLabel
-                }
-            }
-            
-            // 현재 라벨을 이전 라벨로 설정하여 다음 라벨에 사용
-            previousLabel = popupKeywordLabel
-            
-            // 이전 줄 마지막 라벨을 설정
-            if previousLineLabel == nil {
-                previousLineLabel = popupKeywordLabel
-            }
-        }
-
-        // 마지막 라벨의 하단을 팝업 뷰의 하단과 일치시킴
-        if let lastLabel = previousLabel {
-            lastLabel.bottomAnchor.constraint(equalTo: popupView.bottomAnchor, constant: -20).isActive = true
-        }
-
-        // 팝업 뷰의 높이 설정
-        if let previousLineLabel = previousLineLabel {
-            popupView.bottomAnchor.constraint(equalTo: previousLineLabel.bottomAnchor, constant: 20).isActive = true
+    // 키워드 버튼 탭 핸들러
+    @objc func keywordButtonTapped(sender: UIButton) {
+        guard let keyword = sender.titleLabel?.text else { return }
+        if selectedKeywords.contains(keyword) {
+            selectedKeywords.remove(keyword) // 이미 선택된 키워드면 제거
         } else {
-            popupView.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        }
-
-        self.present(popupViewController, animated: true, completion: nil)
-    }
-
-    
-    // 팝업 닫기 버튼 액션
-    @objc func closePopup() {
-        self.dismiss(animated: true, completion: nil)
-    }
-}
-
-extension UIImage {
-    func resize(targetSize: CGSize) -> UIImage {
-        let size = self.size
-        
-        let widthRatio  = targetSize.width  / size.width
-        let heightRatio = targetSize.height / size.height
-        
-        // 이미지를 새로운 크기로 그립니다.
-        let newSize: CGSize
-        if widthRatio > heightRatio {
-            newSize = CGSize(width: size.width * heightRatio, height: size.height * heightRatio)
-        } else {
-            newSize = CGSize(width: size.width * widthRatio,  height: size.height * widthRatio)
+            selectedKeywords.insert(keyword) // 선택되지 않은 키워드면 추가
         }
         
-        let rect = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
-        
-        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
-        self.draw(in: rect)
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        return newImage!
-    }
+        // 버튼의 배경색 업데이트
+        sender.backgroundColor = selectedKeywords.contains(keyword) ? .systemBlue : .orange    }
 }
