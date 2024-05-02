@@ -1,13 +1,6 @@
-//
-//  SecondViewController.swift
-//  Date_New
-//
-//  Created by 이슬기 on 4/27/24.
-//
-
 import UIKit
 
-class SecondViewController: UIViewController {
+class SecondViewController: UIViewController, FilterDelegate {
     
     // 키워드 레이블을 저장할 배열
     var keywordLabels: [UILabel] = []
@@ -17,7 +10,7 @@ class SecondViewController: UIViewController {
     
     // 장소 정보를 담을 딕셔너리 배열
     let places: [[String: String]] = [
-        ["name": "카페", "image": "korea", "description": "카페 장소 설명"],
+        ["name": "카페", "image": "korea", "description": "실내", "price": "12000"],
         ["name": "공원", "image": "korea", "description": "공원 장소 설명"],
         ["name": "음식점", "image": "korea", "description": "음식점 장소 설명"],
         ["name": "카페", "image": "korea", "description": "카페 장소 설명"],
@@ -44,7 +37,6 @@ class SecondViewController: UIViewController {
         return button
     }()
     
-    
     // 장소 이미지 뷰
     let placeImageView: UIImageView = {
         let imageView = UIImageView()
@@ -60,6 +52,17 @@ class SecondViewController: UIViewController {
         label.numberOfLines = 0
         label.backgroundColor = .clear
         return label
+    }()
+    
+    // 스크롤 뷰
+    let scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.layer.borderWidth = 1.0
+        scrollView.layer.borderColor = UIColor.lightGray.cgColor
+        scrollView.layer.cornerRadius = 10
+        scrollView.clipsToBounds = true
+        return scrollView
     }()
     
     // MARK: - View Lifecycle
@@ -82,6 +85,7 @@ class SecondViewController: UIViewController {
         addKeywordLabels()
         
         // 장소 컨테이너 추가
+        view.addSubview(scrollView)
         addPlaceContainer()
     }
     
@@ -152,13 +156,6 @@ class SecondViewController: UIViewController {
     
     // 장소 이미지 및 설명 추가 함수
     func addPlaceContainer() {
-        // 스크롤 뷰 생성
-        let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.layer.borderWidth = 1.0
-        scrollView.layer.borderColor = UIColor.lightGray.cgColor
-        scrollView.layer.cornerRadius = 10
-        scrollView.clipsToBounds = true
         view.addSubview(scrollView)
         
         // 스크롤 뷰 제약 조건 추가
@@ -170,6 +167,108 @@ class SecondViewController: UIViewController {
         ])
         
         // 장소 이미지 및 설명 추가
+        updatePlacesUI(with: places)
+    }
+    
+    func layoutPlaceContainer() {
+        // 아래쪽 여백을 추가할 때 사용할 값
+        let bottomPadding: CGFloat = 20
+
+        // 스크롤 뷰 제약 조건 수정하여 plusButton의 하단에 맞추고, 스크롤 뷰가 뷰 컨트롤러의 하단까지 확장되도록 설정합니다.
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: keywordLabels.last?.bottomAnchor ?? plusButton.bottomAnchor, constant: 20), // 키워드 라벨 아래에 맞추기
+            ])
+    }
+    
+    // MARK: - Actions
+    
+    @objc func filterButtonTapped() {
+        let filterViewController = FilterViewController()
+        filterViewController.delegate = self
+        filterViewController.selectedKeywords = selectedKeywords
+        filterViewController.modalPresentationStyle = .overFullScreen // 전체 화면으로 표시
+        present(filterViewController, animated: true, completion: nil)
+    }
+    
+    // 키워드 버튼 탭 핸들러
+    @objc func keywordButtonTapped(sender: UIButton) {
+        guard let keyword = sender.titleLabel?.text else { return }
+        if selectedKeywords.contains(keyword) {
+            selectedKeywords.remove(keyword) // 이미 선택된 키워드면 제거
+        } else {
+            selectedKeywords.insert(keyword) // 선택되지 않은 키워드면 추가
+        }
+        
+        // 버튼의 배경색 업데이트
+        sender.backgroundColor = selectedKeywords.contains(keyword) ? .systemBlue : .orange    }
+    
+    func didApplyFilters(selectedKeywords: Set<String>, selectedPriceRange: String) {
+        if selectedKeywords.isEmpty && selectedPriceRange.isEmpty {
+            // 필터링된 키워드와 가격대가 없는 경우, 모든 장소를 표시
+            updatePlacesUI(with: places)
+        } else {
+            // 가격대 필터링을 위해 가격대를 범위로 변환합니다.
+            let priceRange = convertPriceRange(selectedPriceRange)
+            
+            // 선택된 키워드와 가격대로 장소를 필터링합니다.
+            let filteredPlaces = filterPlaces(by: selectedKeywords, and: priceRange)
+            
+            // 필터링된 장소로 UI를 업데이트합니다.
+            updatePlacesUI(with: filteredPlaces)
+        }
+    }
+
+    // 가격대 문자열을 실제 가격 범위로 변환하는 메서드
+    func convertPriceRange(_ priceRange: String) -> ClosedRange<Double> {
+        // 예시: "$10 - $20" -> 10.0...20.0로 변환
+        let components = priceRange.split(separator: "~")
+        if components.count == 2, let lowerBound = Double(components[0].trimmingCharacters(in: .whitespaces)), let upperBound = Double(components[1].trimmingCharacters(in: .whitespaces)) {
+            return lowerBound...upperBound
+        } else {
+            // 변환이 실패하면 기본값을 반환합니다.
+            return 0.0...Double.infinity
+        }
+    }
+
+    // 가격대와 키워드에 따라 장소를 필터링하는 메서드
+    func filterPlaces(by keywords: Set<String>?, and priceRange: ClosedRange<Double>?) -> [[String: String]] {
+        // 필터링된 장소를 저장할 배열
+        var filteredPlaces: [[String: String]] = []
+        
+        // 장소를 순회하면서 필터링 작업 수행
+        for place in places {
+            let Hashtag = place["description"] ?? ""
+            let priceString = place["price"] ?? "0" // 장소의 가격 정보
+            
+            // 장소의 가격 정보를 실수로 변환합니다.
+            guard let price = Double(priceString) else {
+                continue // 가격 정보가 올바르지 않으면 다음 장소로 넘어갑니다.
+            }
+            
+            // 키워드 필터링: 장소의 키워드와 선택된 키워드가 일치하는 경우에만 추가
+            let keywordsMatched = keywords == nil || keywords!.isEmpty || keywords!.contains(Hashtag)
+            
+            // 가격대 필터링: 선택된 가격대와 장소의 가격대가 일치하는 경우에만 추가
+            let priceRangeMatched = priceRange == nil || priceRange!.contains(price)
+            
+            // 키워드와 가격대 모두 일치하는 경우에만 장소를 추가
+            if keywordsMatched && priceRangeMatched {
+                filteredPlaces.append(place)
+            }
+            print("Place: \(place["description"] ?? ""), Keywords Matched: \(keywordsMatched), Price Range Matched: \(priceRangeMatched)")
+        }
+        
+        return filteredPlaces
+    }
+
+    
+    func updatePlacesUI(with places: [[String: String]]) {
+        // 이전에 추가된 장소 뷰들을 제거
+        for subview in scrollView.subviews {
+            subview.removeFromSuperview()
+        }
+        
+        // 새로운 장소 정보를 반영하여 UI 업데이트
         var previousView: UIView?
         for place in places {
             guard let imageName = place["image"], let description = place["description"] else {
@@ -216,39 +315,4 @@ class SecondViewController: UIViewController {
             scrollView.bottomAnchor.constraint(equalTo: lastView.bottomAnchor, constant: 20).isActive = true
         }
     }
-
-    func layoutPlaceContainer() {
-        // 아래쪽 여백을 추가할 때 사용할 값
-        let bottomPadding: CGFloat = 20
-        
-        // 스크롤 뷰 제약 조건 수정하여 plusButton의 하단에 맞추고, 스크롤 뷰가 뷰 컨트롤러의 하단까지 확장되도록 설정합니다.
-        if let scrollView = view.subviews.first(where: { $0 is UIScrollView }) as? UIScrollView {
-            NSLayoutConstraint.activate([
-                scrollView.topAnchor.constraint(equalTo: keywordLabels.last?.bottomAnchor ?? plusButton.bottomAnchor, constant: 20), // 키워드 라벨 아래에 맞추기
-                scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -bottomPadding)
-            ])
-        }
-    }
-
-    
-    // MARK: - Actions
-
-    @objc func filterButtonTapped() {
-           let filterViewController = FilterViewController()
-           filterViewController.selectedKeywords = selectedKeywords
-           filterViewController.modalPresentationStyle = .overFullScreen // 전체 화면으로 표시
-           present(filterViewController, animated: true, completion: nil)
-       }
-    
-    // 키워드 버튼 탭 핸들러
-    @objc func keywordButtonTapped(sender: UIButton) {
-        guard let keyword = sender.titleLabel?.text else { return }
-        if selectedKeywords.contains(keyword) {
-            selectedKeywords.remove(keyword) // 이미 선택된 키워드면 제거
-        } else {
-            selectedKeywords.insert(keyword) // 선택되지 않은 키워드면 추가
-        }
-        
-        // 버튼의 배경색 업데이트
-        sender.backgroundColor = selectedKeywords.contains(keyword) ? .systemBlue : .orange    }
 }

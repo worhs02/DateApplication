@@ -22,6 +22,7 @@
 		37D901082BDD449B0050C712 /* FourthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D901072BDD449B0050C712 /* FourthViewController.swift */; };
 		37D9010A2BDD44A80050C712 /* FifthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D901092BDD44A80050C712 /* FifthViewController.swift */; };
 		EA3AF62D2BDF8AD700043741 /* FilterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA3AF62C2BDF8AD700043741 /* FilterViewController.swift */; };
+		EA3AF62F2BE3D81900043741 /* FilterDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA3AF62E2BE3D81900043741 /* FilterDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +62,7 @@
 		37D901072BDD449B0050C712 /* FourthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FourthViewController.swift; sourceTree = "<group>"; };
 		37D901092BDD44A80050C712 /* FifthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FifthViewController.swift; sourceTree = "<group>"; };
 		EA3AF62C2BDF8AD700043741 /* FilterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewController.swift; sourceTree = "<group>"; };
+		EA3AF62E2BE3D81900043741 /* FilterDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +126,7 @@
 				37D901072BDD449B0050C712 /* FourthViewController.swift */,
 				37D901092BDD44A80050C712 /* FifthViewController.swift */,
 				EA3AF62C2BDF8AD700043741 /* FilterViewController.swift */,
+				EA3AF62E2BE3D81900043741 /* FilterDelegate.swift */,
 			);
 			path = Date_New;
 			sourceTree = "<group>";
@@ -280,6 +283,7 @@
 				37D900D22BDD44640050C712 /* AppDelegate.swift in Sources */,
 				37D900D42BDD44640050C712 /* SceneDelegate.swift in Sources */,
 				EA3AF62D2BDF8AD700043741 /* FilterViewController.swift in Sources */,
+				EA3AF62F2BE3D81900043741 /* FilterDelegate.swift in Sources */,
 				37D901082BDD449B0050C712 /* FourthViewController.swift in Sources */,
 				37D9010A2BDD44A80050C712 /* FifthViewController.swift in Sources */,
 				37D901042BDD447E0050C712 /* SecondViewController.swift in Sources */,
