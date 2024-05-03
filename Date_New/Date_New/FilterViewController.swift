@@ -62,7 +62,7 @@ class FilterViewController: UIViewController, FilterDelegate {
         view.addSubview(stackView)
         
         // 키워드 버튼 추가
-        let keywords: [String] = ["실내", "실외"]
+        let keywords: [String] = ["#실내", "#실외"]
         for keyword in keywords {
             let keywordButton = createKeywordButton(title: keyword)
             stackView.addArrangedSubview(keywordButton)
@@ -97,7 +97,7 @@ class FilterViewController: UIViewController, FilterDelegate {
         secondStackView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(secondStackView)
         
-        let remainingKeywords: [String] = ["공방", "액티비티", "수상"]
+        let remainingKeywords: [String] = ["#음식점","#공방", "#액티비티", "#수상"]
         for keyword in remainingKeywords {
             let keywordButton = createKeywordButton(title: keyword)
             secondStackView.addArrangedSubview(keywordButton)

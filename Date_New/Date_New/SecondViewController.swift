@@ -10,18 +10,20 @@ class SecondViewController: UIViewController, FilterDelegate {
     
     // 장소 정보를 담을 딕셔너리 배열
     let places: [[String: String]] = [
-        ["name": "카페", "image": "korea", "description": "실내", "price": "12000"],
-        ["name": "공원", "image": "korea", "description": "공원 장소 설명"],
-        ["name": "음식점", "image": "korea", "description": "음식점 장소 설명"],
-        ["name": "카페", "image": "korea", "description": "카페 장소 설명"],
-        ["name": "공원", "image": "korea", "description": "공원 장소 설명"],
-        ["name": "음식점", "image": "korea", "description": "음식점 장소 설명"],
-        ["name": "카페", "image": "korea", "description": "카페 장소 설명"],
-        ["name": "공원", "image": "korea", "description": "공원 장소 설명"],
-        ["name": "음식점", "image": "korea", "description": "음식점 장소 설명"]
+        ["name": "카페", "image": "korea", "description": "카페 장소 설명", "hashtag": "#실내", "price": "12000"],
+        ["name": "공원", "image": "korea", "description": "공원 장소 설명","hashtag": "#실외"],
+        ["name": "카페", "image": "korea", "description": "카페 장소 설명", "hashtag": "#실내", "price": "12000"],
+        ["name": "공원", "image": "korea", "description": "공원 장소 설명","hashtag": "#실외"],
+        ["name": "음식점", "image": "korea", "description": "음식점 장소 설명","hashtag": "#액티비티"],
+        ["name": "카페", "image": "korea", "description": "카페 장소 설명", "hashtag": "#실내", "price": "12000"],
+        ["name": "공원", "image": "korea", "description": "공원 장소 설명","hashtag": "#실외"],
+        ["name": "음식점", "image": "korea", "description": "음식점 장소 설명","hashtag": "#액티비티"],
+        ["name": "카페", "image": "korea", "description": "카페 장소 설명", "hashtag": "#실내", "price": "12000"],
+        ["name": "공원", "image": "korea", "description": "공원 장소 설명","hashtag": "#실외"],
+        ["name": "음식점", "image": "korea", "description": "음식점 장소 설명","hashtag": "#액티비티"],
         // 추가적인 장소는 여기에 계속해서 추가
     ]
-    let keywords = ["액티비티", "공방", "실내", "실외", "기념일", "예약가능", "음식저"]
+    let keywords = ["#액티비티", "#공방", "#실내", "#실외", "#기념일", "#예약가능", "#음식점"]
     
     var selectedKeywords: Set<String> = []
     
@@ -279,7 +281,7 @@ class SecondViewController: UIViewController, FilterDelegate {
         
         // 장소를 순회하면서 필터링 작업 수행
         for place in places {
-            let Hashtag = place["description"] ?? ""
+            let Hashtag = place["hashtag"] ?? ""
             let priceString = place["price"] ?? "0" // 장소의 가격 정보
             
             // 장소의 가격 정보를 실수로 변환합니다.
@@ -287,8 +289,8 @@ class SecondViewController: UIViewController, FilterDelegate {
                 continue // 가격 정보가 올바르지 않으면 다음 장소로 넘어갑니다.
             }
             
-            // 키워드 필터링: 장소의 키워드와 선택된 키워드가 일치하는 경우에만 추가
-            let keywordsMatched = keywords == nil || keywords!.isEmpty || keywords!.contains(Hashtag)
+            // 키워드 필터링: 장소의 키워드와 선택된 키워드가 모두 일치하는 경우에만 추가
+            let keywordsMatched = keywords == nil || keywords!.isEmpty || Set(keywords!).isSubset(of: Set(Hashtag.components(separatedBy: " ")))
             
             // 가격대 필터링: 선택된 가격대와 장소의 가격대가 일치하는 경우에만 추가
             let priceRangeMatched = priceRange == nil || priceRange!.contains(price)
@@ -313,7 +315,7 @@ class SecondViewController: UIViewController, FilterDelegate {
         // 새로운 장소 정보를 반영하여 UI 업데이트
         var previousView: UIView?
         for place in places {
-            guard let imageName = place["image"], let description = place["description"] else {
+            guard let imageName = place["image"], let description = place["description"], let hashtag = place["hashtag"] else {
                 continue
             }
             
@@ -334,6 +336,17 @@ class SecondViewController: UIViewController, FilterDelegate {
             
             scrollView.addSubview(imageView)
             
+            // 좋아요 버튼 추가
+            let likeButton = UIButton(type: .custom)
+            likeButton.setImage(UIImage(named: "like"), for: .normal) // 좋아요 버튼 이미지 설정
+            likeButton.translatesAutoresizingMaskIntoConstraints = false
+            likeButton.isUserInteractionEnabled = true // 터치 가능하게 설정
+            
+            let liketapGesture = UITapGestureRecognizer(target: self, action: #selector(likeButtonTapped(_:)))
+            likeButton.addGestureRecognizer(liketapGesture)
+            
+            scrollView.addSubview(likeButton)
+            
             
             
             // 장소 설명 설정
@@ -344,7 +357,31 @@ class SecondViewController: UIViewController, FilterDelegate {
             descriptionLabel.backgroundColor = .clear
             descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
             descriptionLabel.isUserInteractionEnabled = true // 터치 가능하게 설정
+            
+            descriptionLabel.font = UIFont.systemFont(ofSize: 14)
+            
+            descriptionLabel.layer.borderWidth = 1.0
+            descriptionLabel.layer.borderColor = UIColor.black.cgColor
+            descriptionLabel.layer.cornerRadius = 10 // 테두리 모서리 둥글게 설정
             scrollView.addSubview(descriptionLabel)
+            
+            // hashtag 설명 설정
+            let hashtagLabel = UILabel()
+            hashtagLabel.text = hashtag
+            hashtagLabel.textAlignment = .left
+            hashtagLabel.numberOfLines = 0
+            hashtagLabel.backgroundColor = .clear
+            hashtagLabel.translatesAutoresizingMaskIntoConstraints = false
+            hashtagLabel.isUserInteractionEnabled = true // 터치 가능하게 설정
+            hashtagLabel.textColor = UIColor.lightGray
+            
+            hashtagLabel.font = UIFont.systemFont(ofSize: 12)
+
+            
+            hashtagLabel.layer.borderWidth = 1.0
+            hashtagLabel.layer.borderColor = UIColor.black.cgColor
+            hashtagLabel.layer.cornerRadius = 10 // 테두리 모서리 둥글게 설정
+            scrollView.addSubview(hashtagLabel)
             
             // 제약 조건 추가
             NSLayoutConstraint.activate([
@@ -355,12 +392,24 @@ class SecondViewController: UIViewController, FilterDelegate {
                 imageView.heightAnchor.constraint(equalToConstant: 100),
                 
                 // 설명 레이블 제약 조건
-                descriptionLabel.topAnchor.constraint(equalTo: imageView.topAnchor),
                 descriptionLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 20), // 이미지뷰의 오른쪽에 배치
-                descriptionLabel.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -20),
-                descriptionLabel.bottomAnchor.constraint(lessThanOrEqualTo: scrollView.bottomAnchor, constant: -20)
+                descriptionLabel.topAnchor.constraint(equalTo: imageView.topAnchor, constant: 20), // 이미지뷰의 상단에 맞춤
+                descriptionLabel.trailingAnchor.constraint(lessThanOrEqualTo: scrollView.trailingAnchor, constant: -20), // scrollView를 벗어나지 않도록 설정
+                descriptionLabel.bottomAnchor.constraint(equalTo: hashtagLabel.topAnchor, constant: -10), // 해시태그 레이블의 위에 배치
+               
+                // 해시태그 레이블 제약 조건
+                hashtagLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 20), // 이미지뷰의 오른쪽에 배치
+                hashtagLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor,constant: 40), // 설명 레이블의 하단에 맞춤
+                hashtagLabel.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -20), // scrollView의 오른쪽에 배치
+                hashtagLabel.bottomAnchor.constraint(lessThanOrEqualTo: scrollView.bottomAnchor, constant: -20), // scrollView를 벗어나지 않도록 설정
+                
+                // 좋아요 버튼 제약 조건
+                likeButton.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: 50), // scrollView 오른쪽에 간격을 주고 버튼을 배치
+                likeButton.centerYAnchor.constraint(equalTo: imageView.centerYAnchor), // 이미지뷰의 수직 중앙에 맞춤
+                likeButton.widthAnchor.constraint(equalToConstant: 30),
+                likeButton.heightAnchor.constraint(equalToConstant: 30),
             ])
-            
+
             // 현재 뷰를 이전 뷰로 설정하여 다음 뷰에 사용
             previousView = imageView
         }
@@ -369,6 +418,11 @@ class SecondViewController: UIViewController, FilterDelegate {
         if let lastView = previousView {
             scrollView.bottomAnchor.constraint(equalTo: lastView.bottomAnchor, constant: 20).isActive = true
         }
+    }
+    
+    @objc func likeButtonTapped(_ sender: UIButton) {
+        
+        print("Like button tapped for place:")
     }
     
     @objc func handleTap(_ sender: UITapGestureRecognizer) {
