@@ -9,6 +9,7 @@ class FilterViewController: UIViewController, FilterDelegate {
     var minPriceLabel: UILabel!
     var maxPriceLabel: UILabel!
     let priceRanges = ["10000원 이하", "10000원 ~ 30000원", "30000 ~ 50000원", "50000원 이상"] // 가격대를 표시하는 라벨을 위한 배열
+    var selectedPriceRange: String = ""
     let priceSlider = UISlider()
     
 
@@ -129,6 +130,17 @@ class FilterViewController: UIViewController, FilterDelegate {
         priceSlider.minimumValue = 0
         priceSlider.maximumValue = 3
         priceSlider.value = 0 // 기본 선택 인덱스 설정
+        
+        if !selectedPriceRange.isEmpty {
+            // selectedPriceRange가 비어 있지 않은 경우, 해당 범위의 인덱스 찾기
+            for (index, range) in priceRanges.enumerated() {
+                if selectedPriceRange == range {
+                    priceSlider.value = Float(index)
+                    break
+                }
+            }
+        }
+        
         priceSlider.translatesAutoresizingMaskIntoConstraints = false
         priceSlider.addTarget(self, action: #selector(priceSliderValueChanged(_:)), for: .valueChanged)
         view.addSubview(priceSlider)
@@ -152,6 +164,7 @@ class FilterViewController: UIViewController, FilterDelegate {
         priceLabel.textAlignment = .center
         priceLabel.font = UIFont.systemFont(ofSize: 14)
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
+        priceLabel.text = selectedPriceRange
         view.addSubview(priceLabel)
 
         // 가격대 선택에 따라 표시할 가격 문자열 배열
@@ -282,7 +295,7 @@ class FilterViewController: UIViewController, FilterDelegate {
                 
         if let delegate = delegate {
             delegate.didApplyFilters(selectedKeywords: selectedKeywords, selectedPriceRange: selectedPriceRange)
-            print("Selected Keywords: \(selectedKeywords), selectedPriceRange: \(selectedPriceRange)")
+        
         } else {
             print("Delegate is not set")
         }
@@ -290,6 +303,14 @@ class FilterViewController: UIViewController, FilterDelegate {
         dismiss(animated: true, completion: nil)
     }
     @objc private func resetButtonTapped() {
+        
+        var selectedKeywords: Set<String> = []
+        let selectedPriceRangeIndex = 0
+        let selectedPriceRange = priceRanges[selectedPriceRangeIndex]
+        
+        if let delegate = delegate {
+            delegate.didApplyFilters(selectedKeywords: selectedKeywords, selectedPriceRange: selectedPriceRange)
+        }
         dismiss(animated: true, completion: nil)
     }
     
@@ -299,7 +320,6 @@ class FilterViewController: UIViewController, FilterDelegate {
     }
     func didApplyFilters(selectedKeywords: Set<String>, selectedPriceRange: String) {
            // 필터 창에서 선택한 정보 처리
-           print("Selected Keywords: \(selectedKeywords), selectedPriceRange: \(selectedPriceRange)")
            // 필요한 작업 수행
        }
 }

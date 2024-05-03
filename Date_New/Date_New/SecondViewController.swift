@@ -25,7 +25,9 @@ class SecondViewController: UIViewController, FilterDelegate {
     
     var selectedKeywords: Set<String> = []
     
-    var temp: Set<String> = []
+    var tempKeywords: Set<String> = []
+    
+    var tempPriceRange: String = ""
     
     // + 버튼
     let plusButton: UIButton = {
@@ -190,7 +192,8 @@ class SecondViewController: UIViewController, FilterDelegate {
         let filterViewController = FilterViewController()
         
         // 필터 뷰 컨트롤러에 현재 선택된 키워드를 전달합니다.
-        filterViewController.selectedKeywords = temp
+        filterViewController.selectedKeywords = tempKeywords
+        filterViewController.selectedPriceRange = tempPriceRange
         
         // 필터 뷰 컨트롤러의 delegate를 현재 뷰 컨트롤러로 설정합니다.
         filterViewController.delegate = self
@@ -225,7 +228,8 @@ class SecondViewController: UIViewController, FilterDelegate {
             // 선택된 키워드와 가격대로 장소를 필터링합니다.
             let filteredPlaces = filterPlaces(by: selectedKeywords, and: priceRange)
              
-            temp = selectedKeywords
+            tempKeywords = selectedKeywords
+            tempPriceRange = selectedPriceRange
             
             // 필터링된 장소로 UI를 업데이트합니다.
             updatePlacesUI(with: filteredPlaces)
@@ -269,7 +273,6 @@ class SecondViewController: UIViewController, FilterDelegate {
             if keywordsMatched && priceRangeMatched {
                 filteredPlaces.append(place)
             }
-            print("Place: \(place["description"] ?? ""), Keywords Matched: \(keywordsMatched), Price Range Matched: \(priceRangeMatched)")
         }
         
         return filteredPlaces
