@@ -115,6 +115,11 @@ class SecondViewController: UIViewController, FilterDelegate {
             label.backgroundColor = .systemOrange // 주황색으로 변경
             label.layer.cornerRadius = 15 // 둥근 테두리 설정
             label.clipsToBounds = true // 테두리가 잘림 방지
+            label.isUserInteractionEnabled = true // 터치 가능하도록 설정
+            
+            // 탭 제스처를 추가합니다.
+                  let tapGesture = UITapGestureRecognizer(target: self, action: #selector(keywordLabelTapped(_:)))
+                  label.addGestureRecognizer(tapGesture)
             
             // 배열에 추가
             keywordLabels.append(label)
@@ -122,6 +127,22 @@ class SecondViewController: UIViewController, FilterDelegate {
             // UILabel을 화면에 추가
             self.view.addSubview(label)
         }
+    }
+    
+    @objc func keywordLabelTapped(_ sender: UITapGestureRecognizer) {
+        guard let label = sender.view as? UILabel else { return }
+        let keyword = label.text ?? ""
+        
+        if selectedKeywords.contains(keyword) {
+            selectedKeywords.remove(keyword) // 이미 선택된 키워드면 제거
+            label.backgroundColor = .systemOrange // 선택 해제되었으므로 배경색을 주황색으로 변경
+        } else {
+            selectedKeywords.insert(keyword) // 선택되지 않은 키워드면 추가
+            label.backgroundColor = .systemBlue // 선택되었으므로 배경색을 파란색으로 변경
+        }
+        
+        // 선택된 키워드에 따라 장소를 필터링하고 UI를 업데이트합니다.
+        didApplyFilters(selectedKeywords: selectedKeywords, selectedPriceRange: tempPriceRange)
     }
     
     func layoutKeywordLabels() {
