@@ -185,6 +185,9 @@ class SecondViewController: UIViewController, FilterDelegate {
             ])
     }
     
+    
+
+    
     // 필터 버튼이 탭되었을 때 호출되는 메서드
     @objc func filterButtonTapped() {
         // 필터 뷰 컨트롤러를 초기화합니다.
@@ -273,6 +276,7 @@ class SecondViewController: UIViewController, FilterDelegate {
             if keywordsMatched && priceRangeMatched {
                 filteredPlaces.append(place)
             }
+
         }
         
         return filteredPlaces
@@ -297,7 +301,19 @@ class SecondViewController: UIViewController, FilterDelegate {
             let imageView = UIImageView(image: placeImage)
             imageView.contentMode = .scaleAspectFill
             imageView.translatesAutoresizingMaskIntoConstraints = false
+            imageView.isUserInteractionEnabled = true // 터치 가능하게 설정
+            
+            // 장소 이미지뷰에 장소 이름을 accessibilityIdentifier로 저장
+            imageView.accessibilityIdentifier = place["name"]
+            
+            // 터치 이벤트 핸들러를 추가하는 UITapGestureRecognizer 생성
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+            // 이미지 뷰에 UITapGestureRecognizer 추가
+            imageView.addGestureRecognizer(tapGesture)
+            
             scrollView.addSubview(imageView)
+            
+            
             
             // 장소 설명 설정
             let descriptionLabel = UILabel()
@@ -306,6 +322,7 @@ class SecondViewController: UIViewController, FilterDelegate {
             descriptionLabel.numberOfLines = 0
             descriptionLabel.backgroundColor = .clear
             descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+            descriptionLabel.isUserInteractionEnabled = true // 터치 가능하게 설정
             scrollView.addSubview(descriptionLabel)
             
             // 제약 조건 추가
@@ -332,4 +349,34 @@ class SecondViewController: UIViewController, FilterDelegate {
             scrollView.bottomAnchor.constraint(equalTo: lastView.bottomAnchor, constant: 20).isActive = true
         }
     }
+    
+    @objc func handleTap(_ sender: UITapGestureRecognizer) {
+        // 탭된 이미지뷰를 가져옵니다.
+        guard let tappedImageView = sender.view as? UIImageView else {
+            return
+        }
+        
+        // 탭된 이미지뷰의 정보를 사용하여 해당하는 장소를 찾습니다.
+        for place in places {
+            if let Name = place["name"], Name == tappedImageView.accessibilityIdentifier {
+                // 장소에 대한 정보를 찾았을 경우, 해당 정보를 사용하여 페이지로 이동합니다.
+                switch Name {
+                case "카페":
+                    let cafeDetailVC = CafeViewController()
+                    cafeDetailVC.placeDescription = place["description"]
+                    present(cafeDetailVC, animated: true, completion: nil)
+                case "공원":
+                    let parkDetailVC = ParkViewController()
+                    parkDetailVC.placeDescription = place["description"]
+                    present(parkDetailVC, animated: true, completion: nil)
+                    // 다른 장소에 대한 처리 추가
+                default:
+                    break
+                }
+            }
+        }
+
+        print("qwe")
+    }
+
 }
