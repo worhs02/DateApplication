@@ -128,6 +128,13 @@ class SecondViewController: UIViewController, FilterDelegate {
             
             // UILabel을 화면에 추가
             self.view.addSubview(label)
+            
+            // 이미 선택된 키워드인지 확인하고 배경색 설정
+                   if selectedKeywords.contains(keyword) {
+                       label.backgroundColor = .systemBlue // 선택된 경우 파란색 배경색 설정
+                   } else {
+                       label.backgroundColor = .systemOrange // 선택되지 않은 경우 주황색 배경색 설정
+                   }
         }
     }
     
@@ -259,9 +266,23 @@ class SecondViewController: UIViewController, FilterDelegate {
             
             // 필터링된 장소로 UI를 업데이트합니다.
             updatePlacesUI(with: filteredPlaces)
+            
+            // 선택된 키워드에 따라 키워드 라벨의 배경색을 업데이트합니다.
+            updateKeywordLabelBackgrounds(selectedKeywords: selectedKeywords)
         }
     }
 
+    func updateKeywordLabelBackgrounds(selectedKeywords: Set<String>) {
+        for label in keywordLabels {
+            if let keyword = label.text {
+                if selectedKeywords.contains(keyword) {
+                    label.backgroundColor = .systemBlue // 선택된 경우 파란색 배경색 설정
+                } else {
+                    label.backgroundColor = .systemOrange // 선택되지 않은 경우 주황색 배경색 설정
+                }
+            }
+        }
+    }
     // 가격대 문자열을 실제 가격 범위로 변환하는 메서드
     func convertPriceRange(_ priceRange: String) -> ClosedRange<Double> {
         // 예시: "$10 - $20" -> 10.0...20.0로 변환
