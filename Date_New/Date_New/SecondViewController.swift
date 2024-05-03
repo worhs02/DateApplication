@@ -22,7 +22,10 @@ class SecondViewController: UIViewController, FilterDelegate {
         // 추가적인 장소는 여기에 계속해서 추가
     ]
     let keywords = ["액티비티", "공방", "실내", "실외", "기념일", "예약가능", "음식저"]
+    
     var selectedKeywords: Set<String> = []
+    
+    var temp: Set<String> = []
     
     // + 버튼
     let plusButton: UIButton = {
@@ -180,13 +183,22 @@ class SecondViewController: UIViewController, FilterDelegate {
             ])
     }
     
-    // MARK: - Actions
-    
+    // 필터 버튼이 탭되었을 때 호출되는 메서드
     @objc func filterButtonTapped() {
+        // 필터 뷰 컨트롤러를 초기화합니다.
+        
         let filterViewController = FilterViewController()
+        
+        // 필터 뷰 컨트롤러에 현재 선택된 키워드를 전달합니다.
+        filterViewController.selectedKeywords = temp
+        
+        // 필터 뷰 컨트롤러의 delegate를 현재 뷰 컨트롤러로 설정합니다.
         filterViewController.delegate = self
-        filterViewController.selectedKeywords = selectedKeywords
-        filterViewController.modalPresentationStyle = .overFullScreen // 전체 화면으로 표시
+        
+        // 필터 뷰 컨트롤러의 모달 프레젠테이션 스타일을 설정합니다.
+        filterViewController.modalPresentationStyle = .overFullScreen
+        
+        // 필터 뷰 컨트롤러를 화면에 표시합니다.
         present(filterViewController, animated: true, completion: nil)
     }
     
@@ -212,6 +224,8 @@ class SecondViewController: UIViewController, FilterDelegate {
             
             // 선택된 키워드와 가격대로 장소를 필터링합니다.
             let filteredPlaces = filterPlaces(by: selectedKeywords, and: priceRange)
+             
+            temp = selectedKeywords
             
             // 필터링된 장소로 UI를 업데이트합니다.
             updatePlacesUI(with: filteredPlaces)

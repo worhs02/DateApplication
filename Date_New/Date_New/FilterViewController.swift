@@ -1,6 +1,6 @@
 import UIKit
 
-class FilterViewController: UIViewController {
+class FilterViewController: UIViewController, FilterDelegate {
     
     weak var delegate: FilterDelegate?
 
@@ -10,6 +10,8 @@ class FilterViewController: UIViewController {
     var maxPriceLabel: UILabel!
     let priceRanges = ["10000원 이하", "10000원 ~ 30000원", "30000 ~ 50000원", "50000원 이상"] // 가격대를 표시하는 라벨을 위한 배열
     let priceSlider = UISlider()
+    
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -154,15 +156,25 @@ class FilterViewController: UIViewController {
 
         // 가격대 선택에 따라 표시할 가격 문자열 배열
         
-        // 확인 버튼
+        // 적용 버튼
         let confirmButton = UIButton()
-        confirmButton.setTitle("확인", for: .normal)
+        confirmButton.setTitle("적용", for: .normal)
         confirmButton.backgroundColor = .systemBlue
         confirmButton.setTitleColor(.white, for: .normal)
         confirmButton.layer.cornerRadius = 10
         confirmButton.addTarget(self, action: #selector(confirmButtonTapped), for: .touchUpInside)
         confirmButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(confirmButton)
+        
+        // 초기화 버튼
+        let resetButton = UIButton()
+        resetButton.setTitle("초기화", for: .normal)
+        resetButton.backgroundColor = .systemBlue
+        resetButton.setTitleColor(.white, for: .normal)
+        resetButton.layer.cornerRadius = 10
+        resetButton.addTarget(self, action: #selector(resetButtonTapped), for: .touchUpInside)
+        resetButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(resetButton)
         
         // 제약 조건 설정
         NSLayoutConstraint.activate([
@@ -202,8 +214,13 @@ class FilterViewController: UIViewController {
             priceLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             priceLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             
+            resetButton.topAnchor.constraint(equalTo: view.bottomAnchor, constant: -80),
+            resetButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: -70),
+            resetButton.widthAnchor.constraint(equalToConstant: 100),
+            resetButton.heightAnchor.constraint(equalToConstant: 40),
+            
             confirmButton.topAnchor.constraint(equalTo: view.bottomAnchor, constant: -80),
-            confirmButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            confirmButton.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 70),
             confirmButton.widthAnchor.constraint(equalToConstant: 100),
             confirmButton.heightAnchor.constraint(equalToConstant: 40)
         ])
@@ -215,7 +232,15 @@ class FilterViewController: UIViewController {
     private func createKeywordButton(title: String) -> UIButton {
         let button = UIButton()
         button.setTitle(title, for: .normal)
+        
+        // Check if the keyword is selected and set button background color accordingly
         button.backgroundColor = selectedKeywords.contains(title) ? .systemBlue : .orange
+        
+        if selectedKeywords.contains(title) {
+            button.isSelected = true
+            button.backgroundColor = .systemBlue
+        }
+        
         button.setTitleColor(.black, for: .normal)
         button.layer.cornerRadius = 10
         button.addTarget(self, action: #selector(keywordButtonTapped(_:)), for: .touchUpInside)
@@ -232,6 +257,7 @@ class FilterViewController: UIViewController {
         
         return button
     }
+
 
     @objc private func keywordButtonTapped(_ sender: UIButton) {
         guard let title = sender.currentTitle else { return }
@@ -263,9 +289,17 @@ class FilterViewController: UIViewController {
 
         dismiss(animated: true, completion: nil)
     }
+    @objc private func resetButtonTapped() {
+        dismiss(animated: true, completion: nil)
+    }
     
     private func updatePriceLabels(min: Int, max: Int) {
         minPriceLabel.text = "\(min)원"
         maxPriceLabel.text = "\(max)원+"
     }
+    func didApplyFilters(selectedKeywords: Set<String>, selectedPriceRange: String) {
+           // 필터 창에서 선택한 정보 처리
+           print("Selected Keywords: \(selectedKeywords), selectedPriceRange: \(selectedPriceRange)")
+           // 필요한 작업 수행
+       }
 }
