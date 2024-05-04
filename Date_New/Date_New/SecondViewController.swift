@@ -380,10 +380,7 @@ class SecondViewController: UIViewController, FilterDelegate {
             descriptionLabel.isUserInteractionEnabled = true // 터치 가능하게 설정
             
             descriptionLabel.font = UIFont.systemFont(ofSize: 14)
-            
-            descriptionLabel.layer.borderWidth = 1.0
-            descriptionLabel.layer.borderColor = UIColor.black.cgColor
-            descriptionLabel.layer.cornerRadius = 10 // 테두리 모서리 둥글게 설정
+        
             scrollView.addSubview(descriptionLabel)
             
             // hashtag 설명 설정
@@ -399,9 +396,6 @@ class SecondViewController: UIViewController, FilterDelegate {
             hashtagLabel.font = UIFont.systemFont(ofSize: 12)
 
             
-            hashtagLabel.layer.borderWidth = 1.0
-            hashtagLabel.layer.borderColor = UIColor.black.cgColor
-            hashtagLabel.layer.cornerRadius = 10 // 테두리 모서리 둥글게 설정
             scrollView.addSubview(hashtagLabel)
             
             // 제약 조건 추가
@@ -425,7 +419,7 @@ class SecondViewController: UIViewController, FilterDelegate {
                 hashtagLabel.bottomAnchor.constraint(lessThanOrEqualTo: scrollView.bottomAnchor, constant: -20), // scrollView를 벗어나지 않도록 설정
                 
                 // 좋아요 버튼 제약 조건
-                likeButton.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: 50), // scrollView 오른쪽에 간격을 주고 버튼을 배치
+                likeButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30), // scrollView 오른쪽에 간격을 주고 버튼을 배치
                 likeButton.centerYAnchor.constraint(equalTo: imageView.centerYAnchor), // 이미지뷰의 수직 중앙에 맞춤
                 likeButton.widthAnchor.constraint(equalToConstant: 30),
                 likeButton.heightAnchor.constraint(equalToConstant: 30),
@@ -471,8 +465,6 @@ class SecondViewController: UIViewController, FilterDelegate {
                 }
             }
         }
-
-        print("qwe")
     }
 
 }
