@@ -10,7 +10,7 @@ class SecondViewController: UIViewController, FilterDelegate {
     
     // 장소 정보를 담을 딕셔너리 배열
     let places: [[String: String]] = [
-        ["name": "카페", "image": "korea", "description": "카페 장소 설명", "hashtag": "#실내", "price": "12000"],
+        ["name": "카페", "image": "korea", "description": "카페 장소 설명", "hashtag": "#실내 #실외", "price": "12000"],
         ["name": "공원", "image": "korea", "description": "공원 장소 설명","hashtag": "#실외"],
         ["name": "카페", "image": "korea", "description": "카페 장소 설명", "hashtag": "#실내", "price": "12000"],
         ["name": "공원", "image": "korea", "description": "공원 장소 설명","hashtag": "#실외"],
@@ -453,7 +453,7 @@ class SecondViewController: UIViewController, FilterDelegate {
                 switch Name {
                 case "카페":
                     let cafeDetailVC = CafeViewController()
-                    cafeDetailVC.placeDescription = place["description"]
+//                    cafeDetailVC.placeDescription = place["description"]
                     present(cafeDetailVC, animated: true, completion: nil)
                 case "공원":
                     let parkDetailVC = ParkViewController()

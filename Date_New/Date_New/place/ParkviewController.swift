@@ -11,6 +11,7 @@ class ParkViewController: UIViewController {
     
     var placeImage: UIImage?
     var placeDescription: String?
+    var UICalendarSelectionMultipleDatesDelegate: Date?
     
     override func viewDidLoad() {
         super.viewDidLoad()
