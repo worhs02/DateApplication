@@ -5,11 +5,10 @@ protocol EventViewControllerDelegate: AnyObject {
 }
 
 class EventViewController: UIViewController {
-
+    
     weak var delegate: EventViewControllerDelegate?
     var selectedDateComponents: DateComponents?
-    var events: [String] = [] // events 배열을 속성으로 추가
-
+    
     let eventTextField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Enter event details"
@@ -17,56 +16,43 @@ class EventViewController: UIViewController {
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
-
+    
     let saveButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Save Event", for: .normal)
-        button.addTarget(self, action: #selector(saveEvent), for: .touchUpInside)
+        button.setTitle("Save", for: .normal)
+        button.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-
-    let eventLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0 // 여러 줄로 나열되도록 설정
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
     
-    func updateEventLabel() {
-        let combinedEvents = events.joined(separator: "\n") // 모든 이벤트를 하나의 문자열로 결합
-        eventLabel.text = combinedEvents // 결합된 이벤트를 UILabel에 표시
-    }
-
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .systemBackground
-
-        self.view.addSubview(eventTextField)
-        self.view.addSubview(saveButton)
-        self.view.addSubview(eventLabel)
-
+        view.backgroundColor = .white
+        
+        setupViews()
+    }
+    
+    private func setupViews() {
+        view.addSubview(eventTextField)
+        view.addSubview(saveButton)
+        
         NSLayoutConstraint.activate([
-            eventTextField.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            eventTextField.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
-            eventTextField.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20),
-
+            eventTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            eventTextField.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            eventTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            eventTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            
             saveButton.topAnchor.constraint(equalTo: eventTextField.bottomAnchor, constant: 20),
-            saveButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-
-            eventLabel.topAnchor.constraint(equalTo: saveButton.bottomAnchor, constant: 20),
-            eventLabel.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
-            eventLabel.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20)
+            saveButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
-
-    @objc func saveEvent() {
-        guard let eventText = eventTextField.text else {
+    
+    @objc private func saveButtonTapped() {
+        guard let eventText = eventTextField.text, !eventText.isEmpty else {
             return
         }
+        
         delegate?.didSaveEvent(eventText)
-        events.append(eventText) // 기존 이벤트를 초기화하지 않고 새 이벤트를 추가
-        updateEventLabel() // 이벤트 텍스트 업데이트
+        dismiss(animated: true)
     }
 }

@@ -41,6 +41,9 @@ class SignUpViewController: UIViewController {
         setupDatabase()
         
         setupViews()
+        
+        // 뒤로 가기 버튼 추가
+        setupBackButton()
     }
     
     private func setupDatabase() {
@@ -92,6 +95,11 @@ class SignUpViewController: UIViewController {
         ])
     }
     
+    private func setupBackButton() {
+        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(backButtonTapped))
+        navigationItem.leftBarButtonItem = backButton
+    }
+    
     // MARK: - Actions
     
     @objc private func signUpButtonTapped() {
@@ -130,9 +138,17 @@ class SignUpViewController: UIViewController {
         do {
             try db.run(users.insert(userIDColumn <- userID, passwordColumn <- password))
             print("User added to database")
+            let loginViewController = LoginViewController()
+            let navigationController = UINavigationController(rootViewController: loginViewController)
+            navigationController.modalPresentationStyle = .overFullScreen // 전체 화면으로 표시되도록 설정
+            present(navigationController, animated: true, completion: nil)
         } catch {
             print("Error adding user: \(error)")
         }
+    }
+    
+    @objc private func backButtonTapped() {
+        dismiss(animated: true, completion: nil)
     }
     
     private func showAlert(message: String) {

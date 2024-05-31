@@ -10,10 +10,13 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    var tabBarController: UITabBarController?
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
+        
+        
         
         // Create UITabBarController
         let tabBarController = UITabBarController()
@@ -54,7 +57,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // Create UIWindow and set rootViewController
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = LoginViewController()
+        window?.rootViewController = tabBarController
         window?.makeKeyAndVisible()
     }
 

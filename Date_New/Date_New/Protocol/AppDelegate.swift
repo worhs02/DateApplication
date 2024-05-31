@@ -11,10 +11,14 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        return true
+        
+        // UserDefaults의 로그인 상태 초기화
+                UserDefaults.standard.set(false, forKey: "isLoggedIn")
+                
+                
+                return true
     }
 
     // MARK: UISceneSession Lifecycle

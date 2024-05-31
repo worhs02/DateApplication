@@ -34,6 +34,7 @@
 		EA3AF6582BE9127B00043741 /* DateDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA3AF6572BE9127B00043741 /* DateDelegate.swift */; };
 		EA6993F02C04F4B4003F420F /* EventViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6993EF2C04F4B4003F420F /* EventViewController.swift */; };
 		EA6993F42C05EF0D003F420F /* DatabaseController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6993F32C05EF0D003F420F /* DatabaseController.swift */; };
+		EAF7631D2C075FA500FCCB7A /* LoginDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAF7631C2C075FA500FCCB7A /* LoginDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +91,7 @@
 		EA3AF6572BE9127B00043741 /* DateDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateDelegate.swift; sourceTree = "<group>"; };
 		EA6993EF2C04F4B4003F420F /* EventViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewController.swift; sourceTree = "<group>"; };
 		EA6993F32C05EF0D003F420F /* DatabaseController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseController.swift; sourceTree = "<group>"; };
+		EAF7631C2C075FA500FCCB7A /* LoginDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginDelegate.swift; sourceTree = "<group>"; };
 		EF5CCC03AD629F4E97F43D99 /* Pods-Date_NewTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Date_NewTests.debug.xcconfig"; path = "Target Support Files/Pods-Date_NewTests/Pods-Date_NewTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -216,6 +218,7 @@
 				37D900D12BDD44640050C712 /* AppDelegate.swift */,
 				EA3AF62E2BE3D81900043741 /* FilterDelegate.swift */,
 				EA3AF6572BE9127B00043741 /* DateDelegate.swift */,
+				EAF7631C2C075FA500FCCB7A /* LoginDelegate.swift */,
 			);
 			path = Protocol;
 			sourceTree = "<group>";
@@ -223,9 +226,9 @@
 		EA3AF6462BE9042200043741 /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				EAF7631B2C075AF600FCCB7A /* MyPlace */,
 				EA6993F12C04F6F9003F420F /* category */,
 				EA6993EE2C04F49C003F420F /* date */,
-				37D901092BDD44A80050C712 /* FifthViewController.swift */,
 				37D901052BDD448B0050C712 /* ThirdViewController.swift */,
 				37D901012BDD44750050C712 /* FirstViewController.swift */,
 			);
@@ -266,6 +269,14 @@
 				EA6993F32C05EF0D003F420F /* DatabaseController.swift */,
 			);
 			path = DataBase;
+			sourceTree = "<group>";
+		};
+		EAF7631B2C075AF600FCCB7A /* MyPlace */ = {
+			isa = PBXGroup;
+			children = (
+				37D901092BDD44A80050C712 /* FifthViewController.swift */,
+			);
+			path = MyPlace;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -524,6 +535,7 @@
 				EA0A080F2C062BA4000F26A4 /* LoginViewController.swift in Sources */,
 				37D901042BDD447E0050C712 /* SecondViewController.swift in Sources */,
 				37D901062BDD448B0050C712 /* ThirdViewController.swift in Sources */,
+				EAF7631D2C075FA500FCCB7A /* LoginDelegate.swift in Sources */,
 				37D901022BDD44750050C712 /* FirstViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

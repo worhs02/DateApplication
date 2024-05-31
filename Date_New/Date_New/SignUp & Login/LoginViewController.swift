@@ -8,11 +8,8 @@
 import UIKit
 import SQLite
 
-protocol LoginDelegate: AnyObject {
-    func didLoginSuccessfully()
-}
-
 class LoginViewController: UIViewController {
+    
     weak var delegate: LoginDelegate?
     
     // SQLite 데이터베이스 연결
@@ -44,12 +41,12 @@ class LoginViewController: UIViewController {
     }()
     
     let signUpButton: UIButton = {
-            let button = UIButton(type: .system)
-            button.setTitle("Sign Up", for: .normal)
-            button.addTarget(self, action: #selector(signUpButtonTapped), for: .touchUpInside)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            return button
-        }()
+        let button = UIButton(type: .system)
+        button.setTitle("Sign Up", for: .normal)
+        button.addTarget(self, action: #selector(signUpButtonTapped), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
     
     // MARK: - View Lifecycle
     
@@ -135,7 +132,9 @@ class LoginViewController: UIViewController {
             if try db.scalar(user.count) > 0 {
                 // 사용자가 존재하면 로그인 성공
                 print("Login successful")
-                delegate?.didLoginSuccessfully() // 로그인 성공 이벤트 전달
+                UserDefaults.standard.set(true, forKey: "isLoggedIn") // 로그인 상태 저장
+                delegate?.didLoginSuccessfully() // 로그인 성공 알림
+                dismiss(animated: true, completion: nil) // 이전 화면으로 돌아가기
             } else {
                 // 사용자가 존재하지 않으면 로그인 실패
                 showAlert(message: "Invalid credentials")
@@ -144,14 +143,14 @@ class LoginViewController: UIViewController {
             print("Error checking for user: \(error)")
         }
     }
+    
     @objc private func signUpButtonTapped() {
         let signUpViewController = SignUpViewController()
-            let navigationController = UINavigationController(rootViewController: signUpViewController)
-            present(navigationController, animated: true, completion: nil)
-        
-        }
-
-
+        let navigationController = UINavigationController(rootViewController: signUpViewController)
+        navigationController.modalPresentationStyle = .overFullScreen // 전체 화면으로 표시되도록 설정
+        present(navigationController, animated: true, completion: nil)
+    }
+    
     // MARK: - Helper Methods
 
     private func showAlert(message: String) {
